@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload and Download</title>
+</head>
+<body>
+    <h1>Image Upload and Download</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*">
+        <input type="submit" value="Upload">
+    </form>
+    <h2>Uploaded Images</h2>
+    <ul id="uploaded-images"></ul>
+    <script src="https://www.gstatic.com/firebasejs/7.14.6/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.6/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.6/firebase-storage.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBqQWKQ78cbJjQFAjHgvMyeSheuY_qg04E",
+            authDomain: "image-upload-32f9e.firebaseapp.com",
+            databaseURL: "https://image-upload-32f9e-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "image-upload-32f9e",
+            storageBucket: "image-upload-32f9e.appspot.com",
+            messagingSenderId: "189182387596"
+        };
+        firebase.initializeApp(config);
+
+        // Get a reference to the storage service, which is used to create references in your storage bucket
+        var storage = firebase.storage();
+
+        // Create a storage reference from our storage service
+        var storageRef = storage.ref();
+
+        // List all the files
+        storageRef.listAll().then(function(result) {
+            result.items.forEach(function(fileRef) {
+                // Get the download URL
+                fileRef.getDownloadURL().then(function(url) {
+                    // Add the image to the list
+                    var listItem = document.createElement('li');
+                    var img = document.createElement('img');
+                    img.src = url;
+                    listItem.appendChild(img);
+                    document.getElementById('uploaded-images').appendChild(listItem);
+                }).catch(function(error) {
+                    console.error('Error getting download URL:', error);
+                });
+            });
+        }).catch(function(error) {
+            console.error('Error listing files:', error);
+        });
+    </script>
+</body>
+</html>
